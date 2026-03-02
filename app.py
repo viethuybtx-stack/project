@@ -2,38 +2,28 @@ import streamlit as st
 from tavily import TavilyClient
 import google.generativeai as genai
 
-# Cấu hình API (Thay key của bạn vào đây)
-genai.configure(api_key="AIzaSyDwn3CzA3K7ETirvT2BY41YtEE5380Xf6E")
-tavily = TavilyClient(api_key="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")
+# Lấy Key từ hệ thống Secrets của Streamlit (Không dán trực tiếp vào code)
+TAVILY_KEY = st.secrets["TAVILY_KEY"]
+GEMINI_KEY = st.secrets["GEMINI_KEY"]
+
+# Cấu hình
+tavily = TavilyClient(api_key=TAVILY_KEY)
+genai.configure(api_key=GEMINI_KEY)
 
 def verify_info(content):
-    # 1. Tìm kiếm thông tin liên quan trên mạng
-    search_result = tavily.search(query=content, search_depth="advanced")
-    context = "\n".join([f"Nguồn: {r['url']}\nNội dung: {r['content']}" for r in search_result['results']])
-    
-    # 2. Dùng AI để phân tích và đối chiếu
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    prompt = f"""
-    Bạn là một chuyên gia kiểm chứng thông tin. 
-    Nội dung cần kiểm tra: {content}
-    Dữ liệu đối chiếu từ internet: {context}
-    
-    Hãy trả về kết quả theo cấu trúc:
-    1. Đánh giá: (Đúng/Sai/Thiếu căn cứ)
-    2. Giải thích chi tiết:
-    3. Các nguồn link đối chiếu:
-    """
-    response = model.generate_content(prompt)
-    return response.text
+    try:
+        # Bước 1: Tìm kiếm thông tin
+        search_result = tavily.search(query=content, search_depth="advanced")
+        context = "\n".join([f"Nguồn: {r['url']}\nNội dung: {r['content']}" for r in search_result['results']])
+        
+        # Bước 2: Gọi Model (Dùng 'gemini-1.5-flash' là ổn định nhất hiện nay)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        prompt = f"Kiểm chứng nội dung: {content}\n\nDựa trên dữ liệu: {context}"
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        return f"Lỗi hệ thống: {str(e)}"
 
-# Giao diện web
-st.title("🛡️ Hệ thống Kiểm chứng Thông tin")
-user_input = st.text_area("Nhập nội dung hoặc dán link cần kiểm tra tại đây:")
-
-if st.button("Kiểm tra ngay"):
-    if user_input:
-        with st.spinner('Đang đối soát dữ liệu thực tế...'):
-            result = verify_info(user_input)
-            st.markdown(result)
-    else:
-        st.warning("Vui lòng nhập nội dung!")
+# Giao diện Streamlit (Giữ nguyên phần dưới của bạn)
+# ...
