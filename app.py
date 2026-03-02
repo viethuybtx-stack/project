@@ -4,7 +4,7 @@ import google.generativeai as genai
 
 # Cấu hình API (Thay key của bạn vào đây)
 genai.configure(api_key="AIzaSyDwn3CzA3K7ETirvT2BY41YtEE5380Xf6E")
-tavily = TavilyClient(api_key="YOUR_TAVILY_KEY")
+tavily = TavilyClient(api_key="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")
 
 def verify_info(content):
     # 1. Tìm kiếm thông tin liên quan trên mạng
