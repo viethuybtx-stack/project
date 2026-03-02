@@ -20,7 +20,7 @@ def verify_info(content):
         context = "\n".join([f"Nguồn: {r['url']}\nNội dung: {r['content']}" for r in search_result['results']])
         
         # 2. Gửi cho Gemini phân tích
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-pro')
         prompt = f"""
         Bạn là một chuyên gia kiểm chứng tin tức độc lập. 
         Nhiệm vụ: Phân tích nội dung sau dựa trên dữ liệu internet được cung cấp.
