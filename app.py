@@ -3,7 +3,7 @@ from tavily import TavilyClient
 import google.generativeai as genai
 
 # Cấu hình API (Thay key của bạn vào đây)
-genai.configure(api_key="YOUR_GEMINI_KEY")
+genai.configure(api_key="AIzaSyDwn3CzA3K7ETirvT2BY41YtEE5380Xf6E")
 tavily = TavilyClient(api_key="YOUR_TAVILY_KEY")
 
 def verify_info(content):
